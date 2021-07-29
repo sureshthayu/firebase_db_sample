@@ -12,6 +12,7 @@
 		185CB1FE23C78CE6009F7571 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 185CB1FD23C78CE6009F7571 /* SceneDelegate.swift */; };
 		185CB20323C78CE6009F7571 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 185CB20123C78CE6009F7571 /* Main.storyboard */; };
 		185CB20523C78CE8009F7571 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 185CB20423C78CE8009F7571 /* Assets.xcassets */; };
+		7C369EDE26B2C7290073A471 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7C369EDD26B2C7290073A471 /* GoogleService-Info.plist */; };
 		B6FED55D261DB03100346BE3 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FED55C261DB03100346BE3 /* LoginViewController.swift */; };
 		B6FED560261DB03500346BE3 /* GroceryListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FED55F261DB03500346BE3 /* GroceryListTableViewController.swift */; };
 		B6FED563261DB03900346BE3 /* OnlineUsersTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6FED562261DB03900346BE3 /* OnlineUsersTableViewController.swift */; };
@@ -29,6 +30,7 @@
 		185CB20223C78CE6009F7571 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		185CB20423C78CE8009F7571 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		185CB20923C78CE8009F7571 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7C369EDD26B2C7290073A471 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		B6FED55C261DB03100346BE3 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		B6FED55F261DB03500346BE3 /* GroceryListTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroceryListTableViewController.swift; sourceTree = "<group>"; };
 		B6FED562261DB03900346BE3 /* OnlineUsersTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnlineUsersTableViewController.swift; sourceTree = "<group>"; };
@@ -52,6 +54,7 @@
 		185CB1EF23C78CE6009F7571 = {
 			isa = PBXGroup;
 			children = (
+				7C369EDD26B2C7290073A471 /* GoogleService-Info.plist */,
 				185CB1FA23C78CE6009F7571 /* Grocr */,
 				185CB1F923C78CE6009F7571 /* Products */,
 			);
@@ -168,6 +171,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				180DC61523C78D9800486B1A /* LaunchScreen.storyboard in Resources */,
+				7C369EDE26B2C7290073A471 /* GoogleService-Info.plist in Resources */,
 				185CB20523C78CE8009F7571 /* Assets.xcassets in Resources */,
 				185CB20323C78CE6009F7571 /* Main.storyboard in Resources */,
 			);

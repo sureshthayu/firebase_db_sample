@@ -42,6 +42,9 @@ class GroceryListTableViewController: UITableViewController {
   var user: User?
   var onlineUserCount = UIBarButtonItem()
 
+  let ref = Database.database(url: "https://grocr-9723e-default-rtdb.asia-southeast1.firebasedatabase.app").reference(withPath: "grocery-items")
+  var refObservers: [DatabaseHandle] = []
+
   override var preferredStatusBarStyle: UIStatusBarStyle {
     return .lightContent
   }
@@ -64,6 +67,27 @@ class GroceryListTableViewController: UITableViewController {
 
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(true)
+    
+    // 1
+    let completed = ref.observe(.value) { snapshot in
+      // 2
+      var newItems: [GroceryItem] = []
+      // 3
+      for child in snapshot.children {
+        // 4
+        if
+          let snapshot = child as? DataSnapshot,
+          let groceryItem = GroceryItem(snapshot: snapshot) {
+          newItems.append(groceryItem)
+        }
+      }
+      // 5
+      self.items = newItems
+      self.tableView.reloadData()
+    }
+    // 6
+    refObservers.append(completed)
+
   }
 
   override func viewDidDisappear(_ animated: Bool) {
@@ -93,9 +117,10 @@ class GroceryListTableViewController: UITableViewController {
 
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
     if editingStyle == .delete {
-      items.remove(at: indexPath.row)
-      tableView.reloadData()
+      let groceryItem = items[indexPath.row]
+      groceryItem.ref?.removeValue()
     }
+
   }
 
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -105,7 +130,9 @@ class GroceryListTableViewController: UITableViewController {
 
     toggleCellCheckbox(cell, isCompleted: toggledCompletion)
     groceryItem.completed = toggledCompletion
-    tableView.reloadData()
+    groceryItem.ref?.updateChildValues([
+      "completed": toggledCompletion
+    ])
   }
 
   func toggleCellCheckbox(_ cell: UITableViewCell, isCompleted: Bool) {
@@ -128,19 +155,24 @@ class GroceryListTableViewController: UITableViewController {
       preferredStyle: .alert)
 
     let saveAction = UIAlertAction(title: "Save", style: .default) { _ in
+      // 1
       guard
         let textField = alert.textFields?.first,
         let text = textField.text,
         let user = self.user
       else { return }
-
+      
+      // 2
       let groceryItem = GroceryItem(
         name: text,
         addedByUser: user.email,
         completed: false)
 
-      self.items.append(groceryItem)
-      self.tableView.reloadData()
+      // 3
+      let groceryItemRef = self.ref.child(text.lowercased())
+
+      // 4
+      groceryItemRef.setValue(groceryItem.toAnyObject())
     }
 
     let cancelAction = UIAlertAction(
