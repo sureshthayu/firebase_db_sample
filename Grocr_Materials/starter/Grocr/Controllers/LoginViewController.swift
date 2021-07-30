@@ -68,11 +68,49 @@ class LoginViewController: UIViewController {
 
   // MARK: Actions
   @IBAction func loginDidTouch(_ sender: AnyObject) {
+    
+    guard
+      let email = enterEmail.text,
+      let password = enterPassword.text,
+      !email.isEmpty,
+      !password.isEmpty
+    else { return }
+
+    Auth.auth().signIn(withEmail: email, password: password) { user, error in
+      if let error = error, user == nil {
+        let alert = UIAlertController(
+          title: "Sign In Failed",
+          message: error.localizedDescription,
+          preferredStyle: .alert)
+
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alert, animated: true, completion: nil)
+      }
+    }
+    
     performSegue(withIdentifier: loginToList, sender: nil)
+
   }
 
   @IBAction func signUpDidTouch(_ sender: AnyObject) {
-    performSegue(withIdentifier: loginToList, sender: nil)
+    // 1
+    guard
+      let email = enterEmail.text,
+      let password = enterPassword.text,
+      !email.isEmpty,
+      !password.isEmpty
+    else { return }
+
+    // 2
+    Auth.auth().createUser(withEmail: email, password: password) { _, error in
+      // 3
+      if error == nil {
+        Auth.auth().signIn(withEmail: email, password: password)
+      } else {
+        print("Error in createUser: \(error?.localizedDescription ?? "")")
+      }
+    }
+
   }
 }
 

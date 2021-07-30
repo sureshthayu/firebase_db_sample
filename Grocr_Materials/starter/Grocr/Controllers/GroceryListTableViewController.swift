@@ -68,23 +68,21 @@ class GroceryListTableViewController: UITableViewController {
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(true)
     
-    // 1
-    let completed = ref.observe(.value) { snapshot in
-      // 2
-      var newItems: [GroceryItem] = []
-      // 3
-      for child in snapshot.children {
-        // 4
-        if
-          let snapshot = child as? DataSnapshot,
-          let groceryItem = GroceryItem(snapshot: snapshot) {
-          newItems.append(groceryItem)
+    let completed = ref
+      .queryOrdered(byChild: "completed")
+      .observe(.value) { snapshot in
+        var newItems: [GroceryItem] = []
+        for child in snapshot.children {
+          if
+            let snapshot = child as? DataSnapshot,
+            let groceryItem = GroceryItem(snapshot: snapshot) {
+            newItems.append(groceryItem)
+          }
         }
+        self.items = newItems
+        self.tableView.reloadData()
       }
-      // 5
-      self.items = newItems
-      self.tableView.reloadData()
-    }
+
     // 6
     refObservers.append(completed)
 
