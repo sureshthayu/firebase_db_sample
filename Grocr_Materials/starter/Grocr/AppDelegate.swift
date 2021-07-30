@@ -37,6 +37,7 @@ import Firebase
 class AppDelegate: UIResponder, UIApplicationDelegate {
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     FirebaseApp.configure()
+    Database.database(url: "https://grocr-9723e-default-rtdb.asia-southeast1.firebasedatabase.app").isPersistenceEnabled = true
     return true
   }
 }
