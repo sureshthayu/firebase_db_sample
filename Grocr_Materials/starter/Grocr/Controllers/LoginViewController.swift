@@ -41,6 +41,9 @@ class LoginViewController: UIViewController {
   @IBOutlet weak var enterEmail: UITextField!
   @IBOutlet weak var enterPassword: UITextField!
 
+  var handle: AuthStateDidChangeListenerHandle?
+
+  
   override var preferredStatusBarStyle: UIStatusBarStyle {
     return .lightContent
   }
@@ -55,6 +58,20 @@ class LoginViewController: UIViewController {
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     navigationController?.setNavigationBarHidden(true, animated: false)
+    
+    // 1
+    handle = Auth.auth().addStateDidChangeListener { _, user in
+      // 2
+      if user == nil {
+        self.navigationController?.popToRootViewController(animated: true)
+      } else {
+        // 3
+        self.performSegue(withIdentifier: self.loginToList, sender: nil)
+        self.enterEmail.text = nil
+        self.enterPassword.text = nil
+      }
+    }
+
   }
 
   override func viewWillDisappear(_ animated: Bool) {
@@ -64,6 +81,9 @@ class LoginViewController: UIViewController {
 
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(animated)
+    guard let handle = handle else { return }
+    Auth.auth().removeStateDidChangeListener(handle)
+
   }
 
   // MARK: Actions
@@ -88,7 +108,8 @@ class LoginViewController: UIViewController {
       }
     }
     
-    performSegue(withIdentifier: loginToList, sender: nil)
+   // performSegue(withIdentifier: loginToList, sender: nil)
+    
 
   }
 

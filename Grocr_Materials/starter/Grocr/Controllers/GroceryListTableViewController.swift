@@ -45,6 +45,13 @@ class GroceryListTableViewController: UITableViewController {
   let ref = Database.database(url: "https://grocr-9723e-default-rtdb.asia-southeast1.firebasedatabase.app").reference(withPath: "grocery-items")
   var refObservers: [DatabaseHandle] = []
 
+  let usersRef = Database.database(url: "https://grocr-9723e-default-rtdb.asia-southeast1.firebasedatabase.app").reference(withPath: "online")
+  var usersRefObservers: [DatabaseHandle] = []
+
+  
+  var handle: AuthStateDidChangeListenerHandle?
+
+  
   override var preferredStatusBarStyle: UIStatusBarStyle {
     return .lightContent
   }
@@ -86,10 +93,40 @@ class GroceryListTableViewController: UITableViewController {
     // 6
     refObservers.append(completed)
 
+    handle = Auth.auth().addStateDidChangeListener { _, user in
+      guard let user = user else { return }
+      self.user = User(authData: user)
+      
+      // 1
+      let currentUserRef = self.usersRef.child(user.uid)
+      // 2
+      currentUserRef.setValue(user.email)
+      // 3
+      currentUserRef.onDisconnectRemoveValue()
+    }
+
+    
+    let users = usersRef.observe(.value) { snapshot in
+      if snapshot.exists() {
+        self.onlineUserCount.title = snapshot.childrenCount.description
+      } else {
+        self.onlineUserCount.title = "0"
+      }
+    }
+    usersRefObservers.append(users)
+
+    
+
   }
 
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(true)
+    guard let handle = handle else { return }
+    Auth.auth().removeStateDidChangeListener(handle)
+
+    usersRefObservers.forEach(usersRef.removeObserver(withHandle:))
+    usersRefObservers = []
+
   }
 
   // MARK: UITableView Delegate methods

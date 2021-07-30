@@ -40,6 +40,11 @@ class OnlineUsersTableViewController: UITableViewController {
   // MARK: Properties
   var currentUsers: [String] = []
 
+  let usersRef = Database.database(url: "https://grocr-9723e-default-rtdb.asia-southeast1.firebasedatabase.app").reference(withPath: "online")
+  var usersRefObservers: [DatabaseHandle] = []
+
+  
+  
   override var preferredStatusBarStyle: UIStatusBarStyle {
     return .lightContent
   }
@@ -48,15 +53,53 @@ class OnlineUsersTableViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    currentUsers.append("hungry@person.food")
+    //currentUsers.append("hungry@person.food")
   }
 
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(true)
+    
+    // 1
+    let childAdded = usersRef
+      .observe(.childAdded) { [weak self] snap in
+        // 2
+        guard
+          let email = snap.value as? String,
+          let self = self
+        else { return }
+        self.currentUsers.append(email)
+        // 3
+        let row = self.currentUsers.count - 1
+        // 4
+        let indexPath = IndexPath(row: row, section: 0)
+        // 5
+        self.tableView.insertRows(at: [indexPath], with: .top)
+      }
+    usersRefObservers.append(childAdded)
+
+    let childRemoved = usersRef
+      .observe(.childRemoved) {[weak self] snap in
+        guard
+          let emailToFind = snap.value as? String,
+          let self = self
+        else { return }
+
+        for (index, email) in self.currentUsers.enumerated()
+        where email == emailToFind {
+          let indexPath = IndexPath(row: index, section: 0)
+          self.currentUsers.remove(at: index)
+          self.tableView.deleteRows(at: [indexPath], with: .fade)
+        }
+      }
+    usersRefObservers.append(childRemoved)
+
   }
 
   override func viewDidDisappear(_ animated: Bool) {
     super.viewDidDisappear(true)
+    usersRefObservers.forEach(usersRef.removeObserver(withHandle:))
+    usersRefObservers = []
+
   }
 
   // MARK: UITableView Delegate methods
@@ -73,6 +116,26 @@ class OnlineUsersTableViewController: UITableViewController {
 
   // MARK: Actions
   @IBAction func signOutDidTouch(_ sender: AnyObject) {
-    navigationController?.popToRootViewController(animated: true)
+    // 1
+    guard let user = Auth.auth().currentUser else { return }
+    let onlineRef = Database.database(url: "https://grocr-9723e-default-rtdb.asia-southeast1.firebasedatabase.app").reference(withPath: "online/\(user.uid)")
+    
+   
+    // 2
+    onlineRef.removeValue { error, _ in
+      // 3
+      if let error = error {
+        print("Removing online failed: \(error)")
+        return
+      }
+      // 4
+      do {
+        try Auth.auth().signOut()
+        self.navigationController?.popToRootViewController(animated: true)
+      } catch let error {
+        print("Auth sign out failed: \(error)")
+      }
+    }
+
   }
 }
